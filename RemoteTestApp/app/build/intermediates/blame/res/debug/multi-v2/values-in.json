@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\Amir\\Documents\\AndroidStdioProjects\\Test\\ExamAppTest\\RemoteTestApp\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-in\\values-in.xml",
+            "outputFile": "C:\\Users\\Amir\\Documents\\Android Stdio\\test\\ExamTestApp\\RemoteTestApp\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-in\\values-in.xml",
             "map": [
                 {
                     "source": "C:\\Users\\Amir\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-28.0.0.aar\\6a5c619f00c829aa904549077f943e2f\\res\\values-in\\values-in.xml",

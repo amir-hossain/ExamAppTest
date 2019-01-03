@@ -21,6 +21,7 @@ public class MyService extends Service {
     private String tag="MyService";
     private final int RANDOM_NUMBER_REQUEST=0;
     private Message message;
+
     private Messenger messenger=new Messenger(new RemoteNumberRequestHandaler());
 
     @Override
@@ -72,11 +73,12 @@ public class MyService extends Service {
                     message.arg1=randomNumber;
 
                     try {
-                        message.replyTo.send(message);
+                        msg.replyTo.send(message);
                     } catch (RemoteException e) {
                         Log.i(tag,e.getMessage());
                     }
             }
+            super.handleMessage(msg);
         }
     }
 }

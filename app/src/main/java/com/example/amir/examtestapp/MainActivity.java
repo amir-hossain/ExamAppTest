@@ -22,7 +22,7 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
     private static final int RANDOM_NUMBER_FLAG = 0;
-    private Messenger request, receive;
+    private Messenger sender, receiver;
     private int randomNumberValue=0;
 
     @BindView(R.id.textView)
@@ -39,12 +39,12 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         serviceIntent=new Intent();
-        serviceIntent.setComponent(new ComponentName("com.example.amir.myapplication","com.example.amir.myapplication.MyService"));
+        serviceIntent.setClassName("com.example.amir.myapplication","com.example.amir.myapplication.MyService");
     }
 
     @OnClick(R.id.bind)
     void bindService(){
-        boolean a=bindService(serviceIntent,connection,Service.BIND_AUTO_CREATE);
+        bindService(serviceIntent,connection,Service.BIND_AUTO_CREATE);
         showToast("Service bound");
     }
 
@@ -67,10 +67,10 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.random_number)
     void getRandomNumber(){
         if(isBound){
-            Message randomNumberRequestMassage=Message.obtain(null,RANDOM_NUMBER_FLAG);
-            randomNumberRequestMassage.replyTo= receive;
+            Message message=Message.obtain(null,RANDOM_NUMBER_FLAG);
+            message.replyTo= receiver;
             try {
-                request.send(randomNumberRequestMassage);
+                sender.send(message);
             } catch (RemoteException e) {
                 Log.i("ClientApp",e.getMessage());
             }
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    class RandomNumberReceiveHadeler extends Handler{
+    class RandomNumberReceiveHandeler extends Handler{
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
@@ -90,22 +90,21 @@ public class MainActivity extends AppCompatActivity {
                     textView.setText("Random Number: "+ randomNumberValue);
 
             }
-            super.handleMessage(msg);
         }
     }
 
     ServiceConnection connection=new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
-            request =new Messenger(binder);
-            receive =new Messenger(new RandomNumberReceiveHadeler());
+            sender =new Messenger(binder);
+            receiver =new Messenger(new RandomNumberReceiveHandeler());
             isBound=true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            receive =null;
-            request =null;
+            receiver =null;
+            sender =null;
             isBound=false;
         }
     };

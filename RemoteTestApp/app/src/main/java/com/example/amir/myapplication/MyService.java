@@ -21,6 +21,7 @@ public class MyService extends Service {
     private String tag="MyService";
     private final int RANDOM_NUMBER_REQUEST=0;
     private Message message;
+    private Messenger sender;
 
     private Messenger messenger=new Messenger(new RemoteNumberRequestHandaler());
 
@@ -43,6 +44,15 @@ public class MyService extends Service {
             while (generatorOn){
                 Thread.sleep(1000);
                 randomNumber=new Random().nextInt(MAX)+MIN;
+                if(sender!=null){
+                    message=Message.obtain(null,RANDOM_NUMBER_REQUEST);
+                    message.arg1=randomNumber;
+                    try {
+                        sender.send(message);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
                 Log.i(tag,"Random number "+randomNumber);
             }
         } catch (InterruptedException e) {
@@ -69,14 +79,9 @@ public class MyService extends Service {
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case RANDOM_NUMBER_REQUEST:
-                    message=Message.obtain(null,RANDOM_NUMBER_REQUEST);
-                    message.arg1=randomNumber;
+                    sender=msg.replyTo;
 
-                    try {
-                        msg.replyTo.send(message);
-                    } catch (RemoteException e) {
-                        Log.i(tag,e.getMessage());
-                    }
+
             }
             super.handleMessage(msg);
         }

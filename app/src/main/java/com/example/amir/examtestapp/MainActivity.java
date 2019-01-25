@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int RANDOM_NUMBER_FLAG = 0;
     private Messenger sender, receiver;
     private int randomNumberValue=0;
+    private ServiceConnection connection;
 
     @BindView(R.id.textView)
     TextView textView;
@@ -44,44 +45,74 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.bind)
     void bindService(){
-        bindService(serviceIntent,connection,Service.BIND_AUTO_CREATE);
-        showToast("Service bound");
-    }
+        if(isBound){
+            showToast("Service already bounded");
+        }else {
+            connection=new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder binder) {
+                    sender =new Messenger(binder);
+                    receiver =new Messenger(new RandomNumberReceiveHandler());
+                    sendNumberRequest();
+                    isBound=true;
+                }
 
-    private void showToast(String message) {
-        Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+                    receiver =null;
+                    sender =null;
+                    isBound=false;
+                }
+            };
+            bindService(serviceIntent,connection,Service.BIND_AUTO_CREATE);
+            showToast("Service bound");
+        }
+
+
     }
 
     @OnClick(R.id.unbind)
-    void unBindService(){
+    void unbindService(){
         if(isBound){
+            Message message=Message.obtain();
             unbindService(connection);
+//            message without replay to will stop sending number
+            message.arg1=RANDOM_NUMBER_FLAG;
             isBound=false;
-            showToast("Service unbound");
+            showToast("Service unbounded");
+            try {
+
+                sender.send(message);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }else {
             showToast("No service to unbind");
         }
 
     }
 
-    @OnClick(R.id.random_number)
-    void getRandomNumber(){
-        if(isBound){
-            Message message=Message.obtain(null,RANDOM_NUMBER_FLAG);
-            message.replyTo= receiver;
-            try {
-                sender.send(message);
-            } catch (RemoteException e) {
-                Log.i("ClientApp",e.getMessage());
-            }
-        }else {
-            showToast("Service is not bounded");
+    private void sendNumberRequest() {
+        Message message=Message.obtain(null,RANDOM_NUMBER_FLAG);
+        message.replyTo= receiver;
+        try {
+            sender.send(message);
+//            receiver.send(message);
+        } catch (RemoteException e) {
+            Log.i("ClientApp",e.getMessage());
         }
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
     }
 
 
 
-    class RandomNumberReceiveHandeler extends Handler{
+
+
+
+    class RandomNumberReceiveHandler extends Handler{
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
@@ -93,21 +124,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    ServiceConnection connection=new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder binder) {
-            sender =new Messenger(binder);
-            receiver =new Messenger(new RandomNumberReceiveHandeler());
-            isBound=true;
-        }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            receiver =null;
-            sender =null;
-            isBound=false;
-        }
-    };
 
     @Override
     protected void onDestroy() {

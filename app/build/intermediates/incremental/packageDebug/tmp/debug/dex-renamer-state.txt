@@ -1,4 +1,4 @@
-#Fri Jan 04 20:33:20 BDT 2019
-base.0=C\:\\Users\\Amir\\Documents\\Android Stdio\\test\\ExamTestApp\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\0
+#Thu Jan 31 02:56:32 BDT 2019
+base.0=C\:\\Users\\Amir\\Documents\\Android Stdio\\test\\ExamTestApp\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\out
 path.0=classes.dex
 renamed.0=classes.dex

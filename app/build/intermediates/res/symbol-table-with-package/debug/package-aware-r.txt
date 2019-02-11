@@ -731,6 +731,7 @@ id normal
 id notification_background
 id notification_main_column
 id notification_main_column_container
+id nxt
 id packed
 id parent
 id parentPanel
@@ -779,6 +780,8 @@ id text
 id text2
 id textSpacerNoButtons
 id textSpacerNoTitle
+id textView
+id textView2
 id time
 id title
 id titleDividerNoCustom
@@ -825,6 +828,7 @@ layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
 layout activity_main
+layout activity_second_actibity
 layout notification_action
 layout notification_action_tombstone
 layout notification_template_custom_big
